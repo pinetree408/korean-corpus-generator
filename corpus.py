@@ -9,6 +9,7 @@ def corpus_generator(path):
     lines = fr.readlines()
 
     result = []
+    result.append(path)
     for line in lines:
         if line.strip() == '':
             continue
@@ -28,7 +29,7 @@ def corpus_generator(path):
 
 
 def search_txt():
-    dirname = './'
+    dirname = '../'
     filenames = os.listdir(dirname)
 
     result = []
@@ -37,13 +38,13 @@ def search_txt():
             subfiles = os.listdir(dirname+filename+'/')
             for subfile in subfiles:
                 if '.txt' in subfile:
-                    txtfile = filename+'/'+subfile
+                    txtfile = dirname+filename+'/'+subfile
                     result.append(txtfile)
-                else:
+                elif not('.py' in subfile):
                     finalfiles = os.listdir(dirname+filename+'/'+subfile+'/')
                     for finalfile in finalfiles:
                         if '.txt' in finalfile:
-                            txtfile = filename+'/'+subfile+'/'+finalfile
+                            txtfile = dirname+filename+'/'+subfile+'/'+finalfile
                             result.append(txtfile)
     return result
 
