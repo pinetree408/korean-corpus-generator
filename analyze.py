@@ -1,6 +1,6 @@
-f = open('result.txt', 'r')
+fr = open('complex.txt', 'r')
 
-lines = f.readlines()
+lines = fr.readlines()
 
 result = {}
 for line in lines:
@@ -11,4 +11,9 @@ for line in lines:
     else:
         result[len(line)] = 1
 
-print result
+fw = open('analyze.txt', 'w')
+for key in result.keys():
+    fw.write(str(key) + ' : ' + str(result[key]) + '\n')
+fw.close()
+
+fr.close()
