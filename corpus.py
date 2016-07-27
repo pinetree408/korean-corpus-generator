@@ -77,10 +77,10 @@ def divide_result():
                     pure_number.append(complex)
                 else:
                     pure_punctuation.append(complex)
-        
+    
     f_pure = open('pure.txt', 'w')
     for item in pure:
-        f_pure.write(item)
+        f_pure.write(item.decode('mbcs').encode('utf-8'))
     f_pure.close()
 
     f_pure_number = open('pure_number.txt', 'w')
