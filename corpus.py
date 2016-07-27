@@ -48,6 +48,14 @@ def check_list(list1, list2):
 
     return False
 
+def make_output(filename, input_list):
+    fw = open(filename, 'w')
+    for item in input_list:
+        fw.write(item.decode('mbcs').encode('utf-8'))
+    fw.close()
+
+
+
 def divide_result():
     fr = open(complex_output, 'r')
     complex_list = fr.readlines()
@@ -78,25 +86,10 @@ def divide_result():
                 else:
                     pure_punctuation.append(complex)
     
-    f_pure = open('pure.txt', 'w')
-    for item in pure:
-        f_pure.write(item.decode('mbcs').encode('utf-8'))
-    f_pure.close()
-
-    f_pure_number = open('pure_number.txt', 'w')
-    for item in pure_number:
-        f_pure_number.write(item)
-    f_pure_number.close()
-
-    f_pure_number_punctuation = open('pure_number_punctuation.txt', 'w')
-    for item in pure_number_punctuation:
-        f_pure_number_punctuation.write(item)
-    f_pure_number_punctuation.close()
-
-    f_pure_punctuation = open('pure_punctuation.txt', 'w')
-    for item in pure_punctuation:
-        f_pure_punctuation.write(item)
-    f_pure_punctuation.close()
+    make_output('pure.txt', pure)
+    make_output('pure_number.txt', pure_number)
+    make_output('pure_number_punctuation.txt', pure_number_punctuation)
+    make_output('pure_punctuation.txt', pure_punctuation)
 
 complex_result()
 divide_result()
