@@ -39,10 +39,12 @@ def complex_result():
     for path in path_list:
         corpus = corpus_generator(path)
         for item in corpus:
-            sliced = item[:len(item)-1].decode('mbcs').encode('utf-8')
+            item = item.decode('mbcs').encode('utf-8')
+            sliced = item[:len(item)-1]
+	    print sliced
             if len(all_reg.sub('', sliced)) != 0:
                 continue
-            fw.write((sliced + '\n'))
+            fw.write((item + '\n'))
     fw.close()
 
 def check_list(list1, list2):
@@ -58,8 +60,6 @@ def make_output(filename, input_list):
     for item in input_list:
         fw.write(item)
     fw.close()
-
-
 
 def divide_result():
     fr = open(complex_output, 'r')
@@ -97,5 +97,25 @@ def divide_result():
     make_output('pure_punctuation.txt', pure_punctuation)
     fr.close()
 
+def combine_result(filename):
+    fa = open(filename, 'a')
+    fr = open('pure.txt', 'r')
+    for line in fr.readlines():
+        fa.write(line)
+    fr.close()
+    if filename == "pure_number_punctuation.txt":
+        frn = open('pure_number.txt', 'r')
+        for line in frn.readlines():
+            fa.write(line)
+        frn.close()
+	frnp = open('pure_punctuation.txt', 'r')
+        for line in frp.readlines():
+            fa.write(line)
+        frp.close()
+    fa.close()
+
 complex_result()
-divide_result()
+#divide_result()
+#combine_result('pure_number_punctuation.txt')
+#combine_result('pure_number.txt')
+#combine_result('pure_punctuation.txt')
