@@ -34,14 +34,13 @@ def complex_result():
 
     fw = open(complex_output, 'w')
 
-    all_reg = re.compile('[ 가-힣0-9\,\(\)\?\!\'\"\.\<\>\[\]]+')
+    all_reg = re.compile('[ a-zA-Z가-힣0-9\,\(\)\?\!\'\"\.\<\>\[\]]+')
 
     for path in path_list:
         corpus = corpus_generator(path)
         for item in corpus:
             item = item.decode('mbcs').encode('utf-8')
             sliced = item[:len(item)-1]
-	    print sliced
             if len(all_reg.sub('', sliced)) != 0:
                 continue
             fw.write((item + '\n'))
@@ -77,9 +76,9 @@ def divide_result():
     punctuation_list = [',','(',')','?','!',"'",'"','.','<','>','[',']']
     for complex in complex_list:
         encoded = complex
-        if len(all_reg.sub('', encoded[:len(encoded)-1])) != 0:
+        if len(all_reg.sub('', encoded[:len(encoded)-2])) != 0:
             continue
-        reg_result = pure_reg.findall(encoded[:len(encoded)-1])
+        reg_result = pure_reg.findall(encoded[:len(encoded)-2])
         if len(reg_result) == 0:
             pure.append(complex)
 	else:
@@ -108,14 +107,14 @@ def combine_result(filename):
         for line in frn.readlines():
             fa.write(line)
         frn.close()
-	frnp = open('pure_punctuation.txt', 'r')
+	frp = open('pure_punctuation.txt', 'r')
         for line in frp.readlines():
             fa.write(line)
         frp.close()
     fa.close()
 
 complex_result()
-#divide_result()
-#combine_result('pure_number_punctuation.txt')
-#combine_result('pure_number.txt')
-#combine_result('pure_punctuation.txt')
+divide_result()
+combine_result('pure_number_punctuation.txt')
+combine_result('pure_number.txt')
+combine_result('pure_punctuation.txt')
