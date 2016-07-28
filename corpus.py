@@ -34,10 +34,15 @@ def complex_result():
 
     fw = open(complex_output, 'w')
 
+    all_reg = re.compile('[ 가-힣0-9\,\(\)\?\!\'\"\.\<\>\[\]]+')
+
     for path in path_list:
         corpus = corpus_generator(path)
         for item in corpus:
-            fw.write(item[:len(item)-1] + '\n')
+            sliced = item[:len(item)-1].decode('mbcs').encode('utf-8')
+            if len(all_reg.sub('', sliced)) != 0:
+                continue
+            fw.write((sliced + '\n'))
     fw.close()
 
 def check_list(list1, list2):
@@ -51,7 +56,7 @@ def check_list(list1, list2):
 def make_output(filename, input_list):
     fw = open(filename, 'w')
     for item in input_list:
-        fw.write(item.decode('mbcs').encode('utf-8'))
+        fw.write(item)
     fw.close()
 
 
@@ -71,7 +76,7 @@ def divide_result():
     number_list = [str(x) for x in range(10)]
     punctuation_list = [',','(',')','?','!',"'",'"','.','<','>','[',']']
     for complex in complex_list:
-        encoded = complex.decode('mbcs').encode('utf-8')
+        encoded = complex
         if len(all_reg.sub('', encoded[:len(encoded)-1])) != 0:
             continue
         reg_result = pure_reg.findall(encoded[:len(encoded)-1])
@@ -90,6 +95,7 @@ def divide_result():
     make_output('pure_number.txt', pure_number)
     make_output('pure_number_punctuation.txt', pure_number_punctuation)
     make_output('pure_punctuation.txt', pure_punctuation)
+    fr.close()
 
 complex_result()
 divide_result()

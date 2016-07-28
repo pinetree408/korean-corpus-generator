@@ -45,6 +45,8 @@ class Generator:
 
     def change_complete_korean(self, word):
 
+        hangul = re.compile('[^가-힣]+')
+        word = hangul.sub('', word).decode('utf-8')
         result = []
         for i in range(len(word)):
             char_code = ord(word[i])
@@ -66,30 +68,42 @@ class Generator:
 
         return result
 
-generator = Generator()
 
-fr = codecs.open('pure.txt', 'r', 'utf-8')
+def analyze(filename):
 
-lines = fr.readlines()
+    input_file = filename + '.txt'
+    output_file = 'analyze_' + filename + '.txt'
 
-result = []
-for line in lines:
-    words = line.split(' ')
-    for word in words:
-        for item in generator.change_complete_korean(word):
-            result.append(item)
+    generator = Generator()
 
-final = {}
-for item in result:
-    if item in final.keys():
-        updated = final[item]
-	del final[item]
-	final[item] = updated + 1
-    else:
-        final[item] = 1
+    fr = open(input_file, 'r')
 
-fw = open('analyze.txt', 'w')
-for key in final.keys():
-    fw.write(str(key) + ' : ' + str(final[key]) + '\n')
-fw.close()
-fr.close()
+    lines = fr.readlines()
+
+    result = []
+    for line in lines:
+        words = line.split(' ')
+        for word in words:
+            for item in generator.change_complete_korean(word):
+                result.append(item)
+
+    final = {}
+    for item in result:
+        if item in final.keys():
+            updated = final[item]
+	    del final[item]
+	    final[item] = updated + 1
+        else:
+            final[item] = 1
+
+    fw = open(output_file, 'w')
+    for key in final.keys():
+        fw.write(str(key) + ' : ' + str(final[key]) + '\n')
+    fw.close()
+    fr.close()
+
+analyze('complex')
+analyze('pure')
+analyze('pure_number')
+analyze('pure_number_punctuation')
+analyze('pure_punctuation')
