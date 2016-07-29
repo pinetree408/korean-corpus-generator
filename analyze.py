@@ -60,7 +60,7 @@ class Generator:
             enH_char = self.enH[enH_code]
             enB_char = self.enB_list[enB_code]
             enF_char = self.enF_list[enF_code]
-            
+
             result.append(enH_char)
             result.append(enB_char)
             if enF_code != 0:
@@ -91,8 +91,8 @@ def analyze(filename):
     for item in result:
         if item in final.keys():
             updated = final[item]
-	    del final[item]
-	    final[item] = updated + 1
+            del final[item]
+            final[item] = updated + 1
         else:
             final[item] = 1
 
@@ -107,7 +107,3 @@ analyze('pure')
 analyze('pure_number')
 analyze('pure_number_punctuation')
 analyze('pure_punctuation')
-#analyze('macken_pure')
-#analyze('macken_pure_number')
-#analyze('macken_pure_number_punctuation')
-#analyze('macken_pure_punctuation')
