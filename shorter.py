@@ -46,8 +46,12 @@ class Generator:
     def change_complete_korean(self, word):
 
         hangul = re.compile('[^가-힣]+')
+        additional = hangul.findall(word)
+        additional_len = 0
+	for item in additional:
+            additional_len += len(item)
         word = hangul.sub('', word).decode('utf-8')
-        result = []
+        result = 0
         for i in range(len(word)):
             char_code = ord(word[i])
             if char_code < 44032 or char_code > 55203:
@@ -61,53 +65,31 @@ class Generator:
             enB_char = self.enB_list[enB_code]
             enF_char = self.enF_list[enF_code]
 
-            result.append(enH_char)
-            result.append(enB_char)
-            if enF_code != 0:
-                result.append(enF_char)
+            result += len(enH_char)
+            result += len(enB_char)
+            result += len(enF_char)
 
-        return result
+        return result + additional_len
 
 
-def analyze(filename):
-
-    input_file = filename + '.txt'
-    output_file = 'analyze_' + filename + '.txt'
+def shorter(filename):
 
     generator = Generator()
 
-    fr = open(input_file, 'r')
-
+    fr = open(filename, 'r')
+    fw = open('short_' + filename, 'w')
     lines = fr.readlines()
-
-    result = []
     for line in lines:
-        words = line.split(' ')
-        for word in words:
-            for item in generator.change_complete_korean(word):
-                result.append(item)
-
-    final = {}
-    for item in result:
-        if item in final.keys():
-            updated = final[item]
-            del final[item]
-            final[item] = updated + 1
-        else:
-            final[item] = 1
-
-    fw = open(output_file, 'w')
-    for key in final.keys():
-        fw.write(str(key) + ' : ' + str(final[key]) + '\n')
+       splited = line[:len(line)-1].split(' ')
+       splited_len = len(splited) - 1
+       for item in splited:
+           splited_len += generator.change_complete_korean(item)
+       if splited_len < 50:
+           fw.write(line)
     fw.close()
     fr.close()
 
-analyze('complex')
-analyze('pure')
-analyze('pure_number')
-analyze('pure_number_punctuation')
-analyze('pure_punctuation')
-analyze('short_pure')
-analyze('short_pure_number')
-analyze('short_pure_number_punctuation')
-analyze('short_pure_punctuation')
+shorter('pure.txt')
+shorter('pure_number.txt')
+shorter('pure_number_punctuation.txt')
+shorter('pure_punctuation.txt')
