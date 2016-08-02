@@ -70,7 +70,6 @@ class Generator:
 
         return result
 
-
 def analyze(filename):
 
     input_file = filename + '.txt'
@@ -82,28 +81,12 @@ def analyze(filename):
 
     lines = fr.readlines()
 
-    bigram = []
     result = []
     for line in lines:
         words = line.split(' ')
         for word in words:
-            #for item in generator.change_complete_korean(word):
-            changed = generator.change_complete_korean(word)
-            for i in range(len(changed)):
-                items = changed[i]
-                for i in range(len(items)):
-                    if len(items) - 1 == i:
-                        continue
-		    else:
-                        bigram.append(items[i] + '-' + items[i+1])
-                if len(changed) -1 == i:
-                    continue
-	        else:
-                    bigram.append(items[len(items)-1] + '-' + changed[i+1][0])
+            for item in generator.change_complete_korean(word):
                 result.append(item)
-
-    print bigram
-    return 0
 
     final = {}
     for item in result:
@@ -120,8 +103,62 @@ def analyze(filename):
     fw.close()
     fr.close()
 
-analyze('complex')
+compare_set = {}
+
+def bigram_analyze(filename):
+    global compare_set
+
+    input_file = filename + '.txt'
+    output_file = 'bigram_analyze_' + filename + '.txt'
+
+    generator = Generator()
+
+    fr = open(input_file, 'r')
+
+    lines = fr.readlines()
+
+    bigram = []
+    for line in lines:
+        words = line.split(' ')
+        for word in words:
+            changed = generator.change_complete_korean(word)
+            for i in range(len(changed)):
+                items = changed[i]
+                for j in range(len(items)):
+                    if len(items) - 1 == j:
+                        continue
+		    else:
+                        bigram.append(items[j] + '-' + items[j+1])
+                if len(changed) -1 == i:
+                    continue
+	        else:
+                    bigram.append(items[len(items)-1] + '-' + changed[i+1][0])
+
+    if filename == 'complex':
+	compare_set = copy.deepcopy(bigram)
+
+    final = {}
+    for item in bigram:
+        if item in final.keys():
+            updated = final[item]
+            del final[item]
+            final[item] = updated + 1
+        else:
+            final[item] = 1
+
+    if filename != 'complex':
+        for key in compare_set:
+            if not(key in final.keys()):
+	        final[key] = 0
+
+    fw = open(output_file, 'w')
+    for key in final.keys():
+        fw.write(str(key) + ' : ' + str(final[key]) + '\n')
+    fw.close()
+    fr.close()
+
 '''
+analyze('complex')
 analyze('pure')
 analyze('pure_number')
 analyze('pure_number_punctuation')
@@ -135,3 +172,16 @@ analyze('random_short_pure_number')
 analyze('random_short_pure_punctuation')
 analyze('random_short_pure_number_punctuation')
 '''
+bigram_analyze('complex')
+bigram_analyze('pure')
+bigram_analyze('pure_number')
+bigram_analyze('pure_number_punctuation')
+bigram_analyze('pure_punctuation')
+bigram_analyze('short_pure')
+bigram_analyze('short_pure_number')
+bigram_analyze('short_pure_number_punctuation')
+bigram_analyze('short_pure_punctuation')
+bigram_analyze('random_short_pure')
+bigram_analyze('random_short_pure_number')
+bigram_analyze('random_short_pure_punctuation')
+bigram_analyze('random_short_pure_number_punctuation')
