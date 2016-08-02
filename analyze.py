@@ -61,10 +61,12 @@ class Generator:
             enB_char = self.enB_list[enB_code]
             enF_char = self.enF_list[enF_code]
 
-            result.append(enH_char)
-            result.append(enB_char)
+            parsed_word = []
+            parsed_word.append(enH_char)
+            parsed_word.append(enB_char)
             if enF_code != 0:
-                result.append(enF_char)
+                parsed_word.append(enF_char)
+            result.append(parsed_word)
 
         return result
 
@@ -80,12 +82,28 @@ def analyze(filename):
 
     lines = fr.readlines()
 
+    bigram = []
     result = []
     for line in lines:
         words = line.split(' ')
         for word in words:
-            for item in generator.change_complete_korean(word):
+            #for item in generator.change_complete_korean(word):
+            changed = generator.change_complete_korean(word)
+            for i in range(len(changed)):
+                items = changed[i]
+                for i in range(len(items)):
+                    if len(items) - 1 == i:
+                        continue
+		    else:
+                        bigram.append(items[i] + '-' + items[i+1])
+                if len(changed) -1 == i:
+                    continue
+	        else:
+                    bigram.append(items[len(items)-1] + '-' + changed[i+1][0])
                 result.append(item)
+
+    print bigram
+    return 0
 
     final = {}
     for item in result:
@@ -103,6 +121,7 @@ def analyze(filename):
     fr.close()
 
 analyze('complex')
+'''
 analyze('pure')
 analyze('pure_number')
 analyze('pure_number_punctuation')
@@ -115,3 +134,4 @@ analyze('random_short_pure')
 analyze('random_short_pure_number')
 analyze('random_short_pure_punctuation')
 analyze('random_short_pure_number_punctuation')
+'''
