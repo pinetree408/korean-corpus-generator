@@ -4,6 +4,12 @@ import copy
 import codecs
 
 
+# option 0 : default analyze
+# option 1 : bigram analyze
+# option 2 : all analye
+
+option = 1
+
 class Generator:
 
     enH = "rRseEfaqQtTdwWczxvg"
@@ -157,31 +163,32 @@ def bigram_analyze(filename):
     fw.close()
     fr.close()
 
-'''
-analyze('complex')
-analyze('pure')
-analyze('pure_number')
-analyze('pure_number_punctuation')
-analyze('pure_punctuation')
-analyze('short_pure')
-analyze('short_pure_number')
-analyze('short_pure_number_punctuation')
-analyze('short_pure_punctuation')
-analyze('random_short_pure')
-analyze('random_short_pure_number')
-analyze('random_short_pure_punctuation')
-analyze('random_short_pure_number_punctuation')
-'''
-bigram_analyze('complex')
-bigram_analyze('pure')
-bigram_analyze('pure_number')
-bigram_analyze('pure_number_punctuation')
-bigram_analyze('pure_punctuation')
-bigram_analyze('short_pure')
-bigram_analyze('short_pure_number')
-bigram_analyze('short_pure_number_punctuation')
-bigram_analyze('short_pure_punctuation')
-bigram_analyze('random_short_pure')
-bigram_analyze('random_short_pure_number')
-bigram_analyze('random_short_pure_punctuation')
-bigram_analyze('random_short_pure_number_punctuation')
+if option == 0 or option == 2:
+    analyze('complex')
+    analyze('pure')
+    analyze('pure_number')
+    analyze('pure_number_punctuation')
+    analyze('pure_punctuation')
+    analyze('short_pure')
+    analyze('short_pure_number')
+    analyze('short_pure_number_punctuation')
+    analyze('short_pure_punctuation')
+    analyze('random_short_pure')
+    analyze('random_short_pure_number')
+    analyze('random_short_pure_punctuation')
+    analyze('random_short_pure_number_punctuation')
+
+if option == 1 or option == 2:
+    bigram_analyze('complex')
+    bigram_analyze('pure')
+    bigram_analyze('pure_number')
+    bigram_analyze('pure_number_punctuation')
+    bigram_analyze('pure_punctuation')
+    bigram_analyze('short_pure')
+    bigram_analyze('short_pure_number')
+    bigram_analyze('short_pure_number_punctuation')
+    bigram_analyze('short_pure_punctuation')
+    bigram_analyze('random_short_pure')
+    bigram_analyze('random_short_pure_number')
+    bigram_analyze('random_short_pure_punctuation')
+    bigram_analyze('random_short_pure_number_punctuation')
