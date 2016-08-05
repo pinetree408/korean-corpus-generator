@@ -48,7 +48,7 @@ class Generator:
         hangul = re.compile('[^가-힣]+')
         additional = hangul.findall(word)
         additional_len = 0
-	for item in additional:
+        for item in additional:
             additional_len += len(item)
         word = hangul.sub('', word).decode('utf-8')
         result = 0
@@ -80,12 +80,12 @@ def shorter(filename):
     fw = open('short_' + filename, 'w')
     lines = fr.readlines()
     for line in lines:
-       splited = line[:len(line)-1].split(' ')
-       splited_len = len(splited) - 1
-       for item in splited:
-           splited_len += generator.change_complete_korean(item)
-       if splited_len < 50:
-           fw.write(line)
+        splited = line[:len(line)-1].split(' ')
+        splited_len = len(splited) - 1
+        for item in splited:
+            splited_len += generator.change_complete_korean(item)
+        if splited_len < 50:
+            fw.write(line)
     fw.close()
     fr.close()
 

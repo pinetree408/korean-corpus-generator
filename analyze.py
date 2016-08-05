@@ -10,6 +10,7 @@ import codecs
 
 option = 1
 
+
 class Generator:
 
     enH = "rRseEfaqQtTdwWczxvg"
@@ -76,6 +77,7 @@ class Generator:
 
         return result
 
+
 def analyze(filename):
 
     input_file = filename + '.txt'
@@ -111,6 +113,7 @@ def analyze(filename):
 
 compare_set = {}
 
+
 def bigram_analyze(filename):
     global compare_set
 
@@ -133,15 +136,15 @@ def bigram_analyze(filename):
                 for j in range(len(items)):
                     if len(items) - 1 == j:
                         continue
-		    else:
+                    else:
                         bigram.append(items[j] + '-' + items[j+1])
-                if len(changed) -1 == i:
+                if len(changed) - 1 == i:
                     continue
-	        else:
+                else:
                     bigram.append(items[len(items)-1] + '-' + changed[i+1][0])
 
     if filename == 'complex':
-	compare_set = copy.deepcopy(bigram)
+        compare_set = copy.deepcopy(bigram)
 
     final = {}
     for item in bigram:
@@ -155,7 +158,7 @@ def bigram_analyze(filename):
     if filename != 'complex':
         for key in compare_set:
             if not(key in final.keys()):
-	        final[key] = 0
+                final[key] = 0
 
     fw = open(output_file, 'w')
     for key in final.keys():

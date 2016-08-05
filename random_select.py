@@ -1,10 +1,11 @@
 import random
 
+
 def random_select(filename):
     fr = open(filename, 'r')
     lines = fr.readlines()
 
-    fw = open('random_'+filename, 'w')
+    fw = open('random_' + filename, 'w')
 
     rand_selected = []
     while len(rand_selected) != 50:
