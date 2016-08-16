@@ -78,7 +78,7 @@ class Generator:
         return result
 
 
-def analyze(filename):
+def analyze(output_path, filename):
 
     input_file = filename + '.txt'
     output_file = 'analyze_' + filename + '.txt'
@@ -114,15 +114,19 @@ def analyze(filename):
 compare_set = {}
 
 
-def bigram_analyze(filename):
+def bigram_analyze(output_path, filename):
     global compare_set
 
     input_file = filename + '.txt'
+    middle_path = filename.split('_')[0] + '/'
+    if filename == 'complex':
+        middle_path = ''
+
     output_file = 'bigram_analyze_' + filename + '.txt'
 
     generator = Generator()
 
-    fr = open(input_file, 'r')
+    fr = open(output_path + middle_path + input_file, 'r')
 
     lines = fr.readlines()
 
@@ -160,38 +164,40 @@ def bigram_analyze(filename):
             if not(key in final.keys()):
                 final[key] = 0
 
-    fw = open(output_file, 'w')
+    fw = open(output_path + output_file, 'w')
     for key in final.keys():
         fw.write(str(key) + ' : ' + str(final[key]) + '\n')
     fw.close()
     fr.close()
 
-if option == 0 or option == 2:
-    analyze('complex')
-    analyze('pure')
-    analyze('pure_number')
-    analyze('pure_number_punctuation')
-    analyze('pure_punctuation')
-    analyze('short_pure')
-    analyze('short_pure_number')
-    analyze('short_pure_number_punctuation')
-    analyze('short_pure_punctuation')
-    analyze('random_short_pure')
-    analyze('random_short_pure_number')
-    analyze('random_short_pure_punctuation')
-    analyze('random_short_pure_number_punctuation')
+def generator(output_path, option):
 
-if option == 1 or option == 2:
-    bigram_analyze('complex')
-    bigram_analyze('pure')
-    bigram_analyze('pure_number')
-    bigram_analyze('pure_number_punctuation')
-    bigram_analyze('pure_punctuation')
-    bigram_analyze('short_pure')
-    bigram_analyze('short_pure_number')
-    bigram_analyze('short_pure_number_punctuation')
-    bigram_analyze('short_pure_punctuation')
-    bigram_analyze('random_short_pure')
-    bigram_analyze('random_short_pure_number')
-    bigram_analyze('random_short_pure_punctuation')
-    bigram_analyze('random_short_pure_number_punctuation')
+    if option == 0 or option == 2:
+        analyze(output_path, 'complex')
+        analyze(ouaput_path, 'pure')
+        analyze(output_path, 'pure_number')
+        analyze(output_path, 'pure_number_punctuation')
+        analyze(output_path, 'pure_punctuation')
+        analyze(output_path, 'short_pure')
+        analyze(output_path, 'short_pure_number')
+        analyze(output_path, 'short_pure_number_punctuation')
+        analyze(output_path, 'short_pure_punctuation')
+        analyze(output_path, 'random_short_pure')
+        analyze(output_path, 'random_short_pure_number')
+        analyze(output_path, 'random_short_pure_punctuation')
+        analyze(output_path, 'random_short_pure_number_punctuation')
+
+    if option == 1 or option == 2:
+        bigram_analyze(output_path, 'complex')
+        bigram_analyze(output_path, 'pure')
+        bigram_analyze(output_path, 'pure_number')
+        bigram_analyze(output_path, 'pure_number_punctuation')
+        bigram_analyze(output_path, 'pure_punctuation')
+        bigram_analyze(output_path, 'short_pure')
+        bigram_analyze(output_path, 'short_pure_number')
+        bigram_analyze(output_path, 'short_pure_number_punctuation')
+        bigram_analyze(output_path, 'short_pure_punctuation')
+        bigram_analyze(output_path, 'random_short_pure')
+        bigram_analyze(output_path, 'random_short_pure_number')
+        bigram_analyze(output_path, 'random_short_pure_punctuation')
+        bigram_analyze(output_path, 'random_short_pure_number_punctuation')

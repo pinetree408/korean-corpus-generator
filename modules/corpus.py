@@ -30,10 +30,10 @@ def search_txt():
     return result
 
 
-def complex_result():
+def complex_result(output_path):
     path_list = search_txt()
 
-    fw = open(complex_output, 'w')
+    fw = open(output_path + complex_output, 'w')
 
     all_reg = re.compile('[ a-zA-Z가-힣0-9\,\(\)\?\!\'\"\.\<\>\[\]]+')
 
@@ -64,8 +64,8 @@ def make_output(filename, input_list):
     fw.close()
 
 
-def divide_result():
-    fr = open(complex_output, 'r')
+def divide_result(output_path):
+    fr = open(output_path + complex_output, 'r')
     complex_list = fr.readlines()
 
     pure = []
@@ -94,32 +94,35 @@ def divide_result():
                 else:
                     pure_punctuation.append(complex)
 
-    make_output('pure.txt', pure)
-    make_output('pure_number.txt', pure_number)
-    make_output('pure_number_punctuation.txt', pure_number_punctuation)
-    make_output('pure_punctuation.txt', pure_punctuation)
+    make_output(output_path + 'pure/pure.txt', pure)
+    make_output(output_path + 'pure/pure_number.txt', pure_number)
+    make_output(output_path + 'pure/pure_number_punctuation.txt', pure_number_punctuation)
+    make_output(output_path + 'pure/pure_punctuation.txt', pure_punctuation)
     fr.close()
 
 
-def combine_result(filename):
-    fa = open(filename, 'a')
-    fr = open('pure.txt', 'r')
+def combine_result(output_path, filename):
+    fa = open(output_path + filename, 'a')
+    fr = open(output_path + 'pure/pure.txt', 'r')
     for line in fr.readlines():
         fa.write(line)
     fr.close()
-    if filename == "pure_number_punctuation.txt":
-        frn = open('pure_number.txt', 'r')
+    if filename == "pure/pure_number_punctuation.txt":
+        frn = open(output_path + 'pure/pure_number.txt', 'r')
         for line in frn.readlines():
             fa.write(line)
         frn.close()
-        frp = open('pure_punctuation.txt', 'r')
+        frp = open(output_path + 'pure/pure_punctuation.txt', 'r')
         for line in frp.readlines():
             fa.write(line)
         frp.close()
     fa.close()
 
-complex_result()
-divide_result()
-combine_result('pure_number_punctuation.txt')
-combine_result('pure_number.txt')
-combine_result('pure_punctuation.txt')
+def generator(output_path):
+    if not os.path.exists(output_path + "pure"):
+        os.makedirs(output_path + "pure")
+    complex_result(output_path)
+    divide_result(output_path)
+    combine_result(output_path, 'pure/pure_number.txt')
+    combine_result(output_path, 'pure/pure_punctuation.txt')
+    combine_result(output_path, 'pure/pure_number_punctuation.txt')

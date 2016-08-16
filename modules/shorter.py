@@ -2,7 +2,7 @@
 import re
 import copy
 import codecs
-
+import os
 
 class Generator:
 
@@ -72,12 +72,12 @@ class Generator:
         return result + additional_len
 
 
-def shorter(filename):
+def shorter(output_path, filename):
 
     generator = Generator()
 
-    fr = open(filename, 'r')
-    fw = open('short_' + filename, 'w')
+    fr = open(output_path + 'pure/' + filename, 'r')
+    fw = open(output_path + 'short/short_' + filename, 'w')
     lines = fr.readlines()
     for line in lines:
         splited = line[:len(line)-1].split(' ')
@@ -89,7 +89,10 @@ def shorter(filename):
     fw.close()
     fr.close()
 
-shorter('pure.txt')
-shorter('pure_number.txt')
-shorter('pure_number_punctuation.txt')
-shorter('pure_punctuation.txt')
+def generator(output_path):
+    if not os.path.exists(output_path + "short"):
+        os.makedirs(output_path + "short")
+    shorter(output_path, 'pure.txt')
+    shorter(output_path, 'pure_number.txt')
+    shorter(output_path, 'pure_number_punctuation.txt')
+    shorter(output_path, 'pure_punctuation.txt')
