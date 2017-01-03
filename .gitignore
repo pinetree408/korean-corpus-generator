@@ -15,4 +15,4 @@ db.*
 node_modules/
 
 # for this project
-output/
+*.txt

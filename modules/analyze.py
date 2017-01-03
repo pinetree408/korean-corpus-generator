@@ -8,10 +8,8 @@ import codecs
 # option 1 : bigram analyze
 # option 2 : all analye
 
-option = 1
 
-
-class Generator:
+class KE:
 
     enH = "rRseEfaqQtTdwWczxvg"
     enB_list = [
@@ -50,7 +48,7 @@ class Generator:
         regF_block = "(" + regF_item_first + regF_item_second + ")"
         self.regex = regH_block + regB_block + regF_block
 
-    def change_complete_korean(self, word):
+    def change_complete_korean(self, word, option):
 
         hangul = re.compile('[^가-힣]+')
         word = hangul.sub('', word).decode('utf-8')
@@ -68,136 +66,180 @@ class Generator:
             enB_char = self.enB_list[enB_code]
             enF_char = self.enF_list[enF_code]
 
-            parsed_word = []
-            parsed_word.append(enH_char)
-            parsed_word.append(enB_char)
-            if enF_code != 0:
-                parsed_word.append(enF_char)
-            result.append(parsed_word)
+            if option == 2:
+                parsed_word = []
+                parsed_word.append(enH_char)
+                parsed_word.append(enB_char)
+                if enF_code != 0:
+                    parsed_word.append(enF_char)
+                result.append(parsed_word)
+            elif option == 1:
+                result.append(enH_char)
+                result.append(enB_char)
+                if enF_code != 0:
+                    result.append(enF_char)
+            else:
+                parsed_word = ""
+                parsed_word += enH_char
+                parsed_word += enB_char
+                if enF_code != 0:
+                    parsed_word += enF_char
+                result.append(parsed_word)
 
         return result
 
+class Unigram:
 
-def analyze(output_path, filename):
+    def __init__(self):
+        self.compare_set = {}
+	self.ke = KE()
+	self.set = ['pure', 'pure_number', 'pure_punctuation', 'pure_number_punctuation']
 
-    input_file = filename + '.txt'
-    output_file = 'analyze_' + filename + '.txt'
+    def analyze(self, analyze_path, output_path, filename):
 
-    generator = Generator()
+        input_file = filename + '.txt'
 
-    fr = open(input_file, 'r')
+        output_file = 'analyze_' + filename + '.txt'
 
-    lines = fr.readlines()
+        fr = open(analyze_path + input_file, 'r')
 
-    result = []
-    for line in lines:
-        words = line.split(' ')
-        for word in words:
-            for item in generator.change_complete_korean(word):
-                result.append(item)
+        lines = fr.readlines()
 
-    final = {}
-    for item in result:
-        if item in final.keys():
-            updated = final[item]
-            del final[item]
-            final[item] = updated + 1
-        else:
-            final[item] = 1
+        result = []
+        for line in lines:
+            words = line.split(' ')
+            for word in words:
+                for item in self.ke.change_complete_korean(word, 1):
+                    result.append(item)
 
-    fw = open(output_file, 'w')
-    for key in final.keys():
-        fw.write(str(key) + ' : ' + str(final[key]) + '\n')
-    fw.close()
-    fr.close()
+        if filename in self.set:
+            self.compare_set = copy.deepcopy(result)
 
-compare_set = {}
+        final = {}
+        for item in result:
+            if item in final.keys():
+                updated = final[item]
+                del final[item]
+                final[item] = updated + 1
+            else:
+                final[item] = 1
+
+        if not (filename in self.set):
+            for key in self.compare_set:
+                if not(key in final.keys()):
+                    final[key] = 0
+
+        fw = open(output_path + output_file, 'w')
+        for key in final.keys():
+            fw.write(str(key) + ' : ' + str(final[key]) + '\n')
+        fw.close()
+        fr.close()
 
 
-def bigram_analyze(output_path, filename):
-    global compare_set
+class Bigram:
 
-    input_file = filename + '.txt'
-    middle_path = filename.split('_')[0] + '/'
-    if filename == 'complex':
-        middle_path = ''
+    def __init__(self):
+        self.compare_set = {}
+	self.ke = KE()
+	self.set = ['pure', 'pure_number', 'pure_punctuation', 'pure_number_punctuation']
 
-    output_file = 'bigram_analyze_' + filename + '.txt'
+    def analyze(self, analyze_path, output_path, filename):
 
-    generator = Generator()
+        input_file = filename + '.txt'
 
-    fr = open(output_path + middle_path + input_file, 'r')
+        output_file = 'bigram_analyze_' + filename + '.txt'
 
-    lines = fr.readlines()
+        fr = open(analyze_path + input_file, 'r')
 
-    bigram = []
-    for line in lines:
-        words = line.split(' ')
-        for word in words:
-            changed = generator.change_complete_korean(word)
-            for i in range(len(changed)):
-                items = changed[i]
-                for j in range(len(items)):
-                    if len(items) - 1 == j:
+        lines = fr.readlines()
+
+        bigram = []
+        for line in lines:
+            words = line.split(' ')
+            for word in words:
+                changed = self.ke.change_complete_korean(word, 2)
+                for i in range(len(changed)):
+                    items = changed[i]
+                    for j in range(len(items)):
+                        if len(items) - 1 == j:
+                            continue
+                        else:
+                            bigram.append(items[j] + '-' + items[j+1])
+                    if len(changed) - 1 == i:
                         continue
                     else:
-                        bigram.append(items[j] + '-' + items[j+1])
-                if len(changed) - 1 == i:
-                    continue
-                else:
-                    bigram.append(items[len(items)-1] + '-' + changed[i+1][0])
+                        bigram.append(items[len(items)-1] + '-' + changed[i+1][0])
 
-    if filename == 'complex':
-        compare_set = copy.deepcopy(bigram)
+        if filename in self.set:
+            self.compare_set = copy.deepcopy(bigram)
 
-    final = {}
-    for item in bigram:
-        if item in final.keys():
-            updated = final[item]
-            del final[item]
-            final[item] = updated + 1
-        else:
-            final[item] = 1
+        final = {}
+        for item in bigram:
+            if item in final.keys():
+                updated = final[item]
+                del final[item]
+                final[item] = updated + 1
+            else:
+                final[item] = 1
 
-    if filename != 'complex':
-        for key in compare_set:
-            if not(key in final.keys()):
-                final[key] = 0
+        if not (filename in self.set):
+            for key in self.compare_set:
+                if not(key in final.keys()):
+                    final[key] = 0
 
-    fw = open(output_path + output_file, 'w')
-    for key in final.keys():
-        fw.write(str(key) + ' : ' + str(final[key]) + '\n')
-    fw.close()
-    fr.close()
+        fw = open(output_path + output_file, 'w')
+        for key in final.keys():
+            fw.write(str(key) + ' : ' + str(final[key]) + '\n')
+        fw.close()
+        fr.close()
 
-def generator(output_path, option):
+'''
+class Word:
 
-    if option == 0 or option == 2:
-        analyze(output_path, 'complex')
-        analyze(ouaput_path, 'pure')
-        analyze(output_path, 'pure_number')
-        analyze(output_path, 'pure_number_punctuation')
-        analyze(output_path, 'pure_punctuation')
-        analyze(output_path, 'short_pure')
-        analyze(output_path, 'short_pure_number')
-        analyze(output_path, 'short_pure_number_punctuation')
-        analyze(output_path, 'short_pure_punctuation')
-        analyze(output_path, 'random_short_pure')
-        analyze(output_path, 'random_short_pure_number')
-        analyze(output_path, 'random_short_pure_punctuation')
-        analyze(output_path, 'random_short_pure_number_punctuation')
+    compare_word_set = {}
 
-    if option == 1 or option == 2:
-        bigram_analyze(output_path, 'complex')
-        bigram_analyze(output_path, 'pure')
-        bigram_analyze(output_path, 'pure_number')
-        bigram_analyze(output_path, 'pure_number_punctuation')
-        bigram_analyze(output_path, 'pure_punctuation')
-        bigram_analyze(output_path, 'short_pure')
-        bigram_analyze(output_path, 'short_pure_number')
-        bigram_analyze(output_path, 'short_pure_number_punctuation')
-        bigram_analyze(output_path, 'short_pure_punctuation')
-        bigram_analyze(output_path, 'random_short_pure')
-        bigram_analyze(output_path, 'random_short_pure_number')
-        bigram_analyze(output_path, 'random_short_pure_punctuation')
-        bigram_analyze(output_path, 'random_short_pure_number_punctuation')
+    def word_analyze(output_path, filename):
+
+        input_file = filename + '.txt'
+        middle_path = filename.split('_')[0] + '/'
+        if filename == 'pure':
+            middle_path = ''
+
+        output_file = 'word_analyze_' + filename + '.txt'
+
+        generator = Generator()
+
+        fr = open(output_path + middle_path + input_file, 'r')
+
+        lines = fr.readlines()
+
+        word_list = []
+        for line in lines:
+            words = line.split(' ')
+            for word in words:
+                changed = generator.change_complete_korean(word, 3)
+	        word_list.append("".join(changed))
+
+        if filename == 'pure':
+            self.compare_word_set = copy.deepcopy(word_list)
+
+        final = {}
+        for item in word_list:
+            if item in final.keys():
+                updated = final[item]
+                del final[item]
+                final[item] = updated + 1
+            else:
+                final[item] = 1
+
+        if filename != 'complex':
+            for key in self.compare_word_set:
+                if not(key in final.keys()):
+                    final[key] = 0
+
+        fw = open(output_path + output_file, 'w')
+        for key in final.keys():
+            fw.write(str(key) + ' : ' + str(final[key]) + '\n')
+        fw.close()
+        fr.close()
+'''

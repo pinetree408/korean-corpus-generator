@@ -4,7 +4,7 @@ import copy
 import codecs
 import os
 
-class Generator:
+class KE():
 
     enH = "rRseEfaqQtTdwWczxvg"
     enB_list = [
@@ -71,28 +71,30 @@ class Generator:
 
         return result + additional_len
 
+class Preprocess():
 
-def shorter(output_path, filename):
+    def __init__(self):
+        self.ke = KE()
 
-    generator = Generator()
+    def shorter(self, set_path, filename):
+  
+        fr = open(set_path + filename, 'r')
+        fw = open(set_path + 'short/short_' + filename, 'w')
+        lines = fr.readlines()
+        for line in lines:
+            splited = line[:len(line)-1].split(' ')
+            splited_len = len(splited) - 1
+            for item in splited:
+                splited_len += self.ke.change_complete_korean(item)
+            if splited_len > 20 and splited_len < 50:
+                fw.write(line)
+        fw.close()
+        fr.close()
 
-    fr = open(output_path + 'pure/' + filename, 'r')
-    fw = open(output_path + 'short/short_' + filename, 'w')
-    lines = fr.readlines()
-    for line in lines:
-        splited = line[:len(line)-1].split(' ')
-        splited_len = len(splited) - 1
-        for item in splited:
-            splited_len += generator.change_complete_korean(item)
-        if splited_len < 50:
-            fw.write(line)
-    fw.close()
-    fr.close()
-
-def generator(output_path):
-    if not os.path.exists(output_path + "short"):
-        os.makedirs(output_path + "short")
-    shorter(output_path, 'pure.txt')
-    shorter(output_path, 'pure_number.txt')
-    shorter(output_path, 'pure_number_punctuation.txt')
-    shorter(output_path, 'pure_punctuation.txt')
+    def generator(self, set_path):
+        if not os.path.exists(set_path + "short"):
+            os.makedirs(set_path + "short")
+        self.shorter(set_path, 'pure.txt')
+        self.shorter(set_path, 'pure_number.txt')
+        self.shorter(set_path, 'pure_number_punctuation.txt')
+        self.shorter(set_path, 'pure_punctuation.txt')
