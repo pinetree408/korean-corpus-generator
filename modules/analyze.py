@@ -2,7 +2,7 @@
 import re
 import copy
 import codecs
-
+from konlpy.tag import Hannanum
 
 # option 0 : default analyze
 # option 1 : bigram analyze
@@ -51,6 +51,8 @@ class KE:
     def change_complete_korean(self, word, option):
 
         hangul = re.compile('[^가-힣]+')
+        if option == 3:
+            word = word.encode('utf-8')
         word = hangul.sub('', word).decode('utf-8')
         result = []
         for i in range(len(word)):
@@ -78,7 +80,7 @@ class KE:
                 result.append(enB_char)
                 if enF_code != 0:
                     result.append(enF_char)
-            else:
+	    elif option == 3:
                 parsed_word = ""
                 parsed_word += enH_char
                 parsed_word += enB_char
@@ -193,34 +195,34 @@ class Bigram:
         fw.close()
         fr.close()
 
-'''
 class Word:
 
-    compare_word_set = {}
+    def __init__(self):
+        self.compare_word_set = {}
+	self.hannanum = Hannanum()
+	self.ke = KE()
+	self.set = ['pure', 'pure_number', 'pure_punctuation', 'pure_number_punctuation']
 
-    def word_analyze(output_path, filename):
+    def analyze(self, analyze_path, output_path, filename):
 
         input_file = filename + '.txt'
-        middle_path = filename.split('_')[0] + '/'
-        if filename == 'pure':
-            middle_path = ''
 
         output_file = 'word_analyze_' + filename + '.txt'
 
-        generator = Generator()
-
-        fr = open(output_path + middle_path + input_file, 'r')
+        fr = open(analyze_path + input_file, 'r')
 
         lines = fr.readlines()
 
         word_list = []
         for line in lines:
-            words = line.split(' ')
+	    if len(line.strip()) == 0:
+                continue
+            words = self.hannanum.morphs(line.decode('utf-8'))
             for word in words:
-                changed = generator.change_complete_korean(word, 3)
+                changed = self.ke.change_complete_korean(word, 3)
 	        word_list.append("".join(changed))
 
-        if filename == 'pure':
+        if filename in self.set:
             self.compare_word_set = copy.deepcopy(word_list)
 
         final = {}
@@ -232,7 +234,7 @@ class Word:
             else:
                 final[item] = 1
 
-        if filename != 'complex':
+        if not (filename in self.set):
             for key in self.compare_word_set:
                 if not(key in final.keys()):
                     final[key] = 0
@@ -242,4 +244,3 @@ class Word:
             fw.write(str(key) + ' : ' + str(final[key]) + '\n')
         fw.close()
         fr.close()
-'''

@@ -15,6 +15,7 @@ if not os.path.exists(analyze_path):
 
 unigram = analyze.Unigram()
 bigram = analyze.Bigram()
+word = analyze.Word()
 
 set_list = ['pure','pure_number','pure_punctuation','pure_number_punctuation']
 
@@ -22,13 +23,19 @@ for item in set_list:
 
     unigram.analyze(set_path,analyze_path, item)
     bigram.analyze(set_path,analyze_path, item)
+    word.analyze(set_path, analyze_path, item)
 
     for i in range(10):
         random_selecter.random_select(set_path, output_path, 'short_' + item + '.txt')
+
         unigram.analyze(output_path, analyze_path, 'random_short_' + item)
         bigram.analyze(output_path, analyze_path, 'random_short_' + item)
+        word.analyze(output_path, analyze_path, 'random_short_' + item)
+
         uni_corr = correlation_calc.correlation_cal(analyze_path + "analyze_" + item + ".txt", analyze_path + "analyze_random_short_" + item + ".txt")
         bi_corr = correlation_calc.correlation_cal(analyze_path + "bigram_analyze_" + item + ".txt", analyze_path + "bigram_analyze_random_short_" + item + ".txt")
-        print uni_corr, bi_corr
-        shutil.copy2("./output/random_short_" + item +".txt", "./output/random_short_" + item + str(uni_corr) + str(bi_corr) +".txt")
+        word_corr = correlation_calc.correlation_cal(analyze_path + "word_analyze_" + item + ".txt", analyze_path + "word_analyze_random_short_" + item + ".txt")
 
+        final_name = "_" + str(uni_corr) + "_" + str(bi_corr) + "_" + str(word_corr)
+        shutil.copy2("./output/random_short_" + item +".txt", "./output/random_short_" + item + final_name + ".txt")
+        print uni_corr, bi_corr, word_corr

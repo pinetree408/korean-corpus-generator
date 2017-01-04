@@ -22,13 +22,13 @@ def correlation_cal(file1, file2):
     for line in f1lines:
         temp = line.split(':')
         f1correl[temp[0].strip()] = temp[1].strip()
-        od1 = collections.OrderedDict(sorted(f1correl.items()))
+    od1 = collections.OrderedDict(sorted(f1correl.items()))
 
     f2correl = {}
     for line in f2lines:
         temp = line.split(':')
         f2correl[temp[0].strip()] = temp[1].strip()
-        od2 = collections.OrderedDict(sorted(f2correl.items()))
+    od2 = collections.OrderedDict(sorted(f2correl.items()))
 
 
     f1value = []
