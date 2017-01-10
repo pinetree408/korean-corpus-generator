@@ -9,7 +9,7 @@ from konlpy.tag import Hannanum
 # option 2 : all analye
 
 
-class KE:
+class KE(object):
 
     enH = "rRseEfaqQtTdwWczxvg"
     enB_list = [
@@ -90,7 +90,7 @@ class KE:
 
         return result
 
-class Unigram:
+class Unigram(object):
 
     def __init__(self):
         self.compare_set = {}
@@ -138,7 +138,7 @@ class Unigram:
         fr.close()
 
 
-class Bigram:
+class Bigram(object):
 
     def __init__(self):
         self.compare_set = {}
@@ -195,7 +195,7 @@ class Bigram:
         fw.close()
         fr.close()
 
-class Word:
+class Word(object):
 
     def __init__(self):
         self.compare_word_set = {}
