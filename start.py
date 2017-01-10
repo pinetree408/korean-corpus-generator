@@ -18,12 +18,16 @@ bigram = analyze.Bigram()
 word = analyze.Word()
 
 set_list = ['pure','pure_number','pure_punctuation','pure_number_punctuation']
+#set_list = ['pure']
 
 for item in set_list:
 
+    print 'start'
     unigram.analyze(set_path,analyze_path, item)
     bigram.analyze(set_path,analyze_path, item)
     word.analyze(set_path, analyze_path, item)
+
+    print item
 
     for i in range(10):
         random_selecter.random_select(set_path, output_path, 'short_' + item + '.txt')
@@ -32,7 +36,11 @@ for item in set_list:
         bigram.analyze(output_path, analyze_path, 'random_short_' + item)
         word.analyze(output_path, analyze_path, 'random_short_' + item)
 
-        uni_corr = correlation_calc.correlation_cal(analyze_path + "analyze_" + item + ".txt", analyze_path + "analyze_random_short_" + item + ".txt")
+        #unigram.analyze(output_path, analyze_path, 'mackenzie_' + item)
+        #bigram.analyze(output_path, analyze_path, 'mackenzie_' + item)
+        #word.analyze(output_path, analyze_path, 'mackenzie_' + item)
+
+        uni_corr = correlation_calc.correlation_cal(analyze_path + "analyze_" + item + ".txt", analyze_path + "analyze_random_short" + item + ".txt")
         bi_corr = correlation_calc.correlation_cal(analyze_path + "bigram_analyze_" + item + ".txt", analyze_path + "bigram_analyze_random_short_" + item + ".txt")
         word_corr = correlation_calc.correlation_cal(analyze_path + "word_analyze_" + item + ".txt", analyze_path + "word_analyze_random_short_" + item + ".txt")
 

@@ -217,7 +217,8 @@ class Word:
         for line in lines:
 	    if len(line.strip()) == 0:
                 continue
-            words = self.hannanum.morphs(line.decode('utf-8'))
+            #words = self.hannanum.morphs(line.decode('utf-8'))
+            words = line.decode('utf-8').split(' ')
             for word in words:
                 changed = self.ke.change_complete_korean(word, 3)
 	        word_list.append("".join(changed))
