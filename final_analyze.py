@@ -93,5 +93,6 @@ def corr_calc_of_target(target):
         word_analyzer = analyze.Word()
         corr_calc_of_picked(target, word_analyzer)
 
-repeat_picked_generator()
-corr_calc_of_target('word')
+if __name__ == "__main__":
+    repeat_picked_generator()
+    corr_calc_of_target('word')

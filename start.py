@@ -1,49 +1,57 @@
-from modules import corpus, shorter, random_selecter, analyze
-from util import correlation_calc
+# -*- coding: utf-8 -*-
+"""Generate 10 random picked pharse set
+
+This module generate 10 random picked pharse sets from random_selector module
+
+"""
 import os
 import shutil
 
-set_path = './set/'
+from modules import analyze, random_selector
+from util import correlation_calc
 
-output_path = './output/'
-if not os.path.exists(output_path):
-    os.makedirs(output_path)
+if __name__ == "__main__":
+    SET_PATH = "./set/"
+    OUTPUT_PATH = "./output/"
+    if not os.path.exists(OUTPUT_PATH):
+        os.makedirs(OUTPUT_PATH)
 
-analyze_path = './analyze/'
-if not os.path.exists(analyze_path):
-    os.makedirs(analyze_path)
+    ANALYZE_PATH = "./analyze/"
+    if not os.path.exists(ANALYZE_PATH):
+        os.makedirs(ANALYZE_PATH)
 
-unigram = analyze.Unigram()
-bigram = analyze.Bigram()
-word = analyze.Word()
+    UNIGRAM = analyze.Unigram()
+    BIGRAM = analyze.Bigram()
+    WORD = analyze.Word()
 
-set_list = ['pure','pure_number','pure_punctuation','pure_number_punctuation']
-#set_list = ['pure']
+    SET_LIST = ["pure", "pure_number", "pure_punctuation", "pure_number_punctuation"]
 
-for item in set_list:
+    for item in SET_LIST:
 
-    print 'start'
-    unigram.analyze(set_path,analyze_path, item)
-    bigram.analyze(set_path,analyze_path, item)
-    word.analyze(set_path, analyze_path, item)
+        print "start"
+        UNIGRAM.analyze(SET_PATH, ANALYZE_PATH, item)
+        BIGRAM.analyze(SET_PATH, ANALYZE_PATH, item)
+        WORD.analyze(SET_PATH, ANALYZE_PATH, item)
 
-    print item
+        for i in range(10):
+            random_selector.random_select(SET_PATH, OUTPUT_PATH, 'short_'+item+'.txt')
 
-    for i in range(10):
-        random_selecter.random_select(set_path, output_path, 'short_' + item + '.txt')
+            random_short_target = 'random_short_' + item #mackenzie_
+            UNIGRAM.analyze(OUTPUT_PATH, ANALYZE_PATH, random_short_target)
+            BIGRAM.analyze(OUTPUT_PATH, ANALYZE_PATH, random_short_target)
+            WORD.analyze(OUTPUT_PATH, ANALYZE_PATH, random_short_target)
 
-        unigram.analyze(output_path, analyze_path, 'random_short_' + item)
-        bigram.analyze(output_path, analyze_path, 'random_short_' + item)
-        word.analyze(output_path, analyze_path, 'random_short_' + item)
+            uni_analyze_path = ANALYZE_PATH + "analyze_"
+            bi_analyze_path = ANALYZE_PATH + "bigram_analyze "
+            word_analyze_path = ANALYZE_PATH + "word_analyze_"
 
-        #unigram.analyze(output_path, analyze_path, 'mackenzie_' + item)
-        #bigram.analyze(output_path, analyze_path, 'mackenzie_' + item)
-        #word.analyze(output_path, analyze_path, 'mackenzie_' + item)
+            uni_corr = correlation_calc.correlation_cal(uni_analyze_path+item,
+                                                        uni_analyze_path+random_short_target)
+            bi_corr = correlation_calc.correlation_cal(bi_analyze_path+item,
+                                                       bi_analyze_path+random_short_target)
+            word_corr = correlation_calc.correlation_cal(word_analyze_path+item,
+                                                         word_analyze_path+random_short_target)
 
-        uni_corr = correlation_calc.correlation_cal(analyze_path + "analyze_" + item + ".txt", analyze_path + "analyze_random_short" + item + ".txt")
-        bi_corr = correlation_calc.correlation_cal(analyze_path + "bigram_analyze_" + item + ".txt", analyze_path + "bigram_analyze_random_short_" + item + ".txt")
-        word_corr = correlation_calc.correlation_cal(analyze_path + "word_analyze_" + item + ".txt", analyze_path + "word_analyze_random_short_" + item + ".txt")
-
-        final_name = "_" + str(uni_corr) + "_" + str(bi_corr) + "_" + str(word_corr)
-        shutil.copy2("./output/random_short_" + item +".txt", "./output/random_short_" + item + final_name + ".txt")
-        print uni_corr, bi_corr, word_corr
+            final_name = "_"+str(uni_corr)+"_"+str(bi_corr)+"_"+str(word_corr)
+            copied = "./output/random_short_"+item
+            shutil.copy2(copied+".txt", copied+final_name+".txt")
