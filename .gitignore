@@ -6,6 +6,7 @@ venv/
 
 # for python
 *.py[cod]
+*.whl
 
 # for django
 migrations/
