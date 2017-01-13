@@ -32,10 +32,8 @@ class Complex(object):
             result (list): plain text corpus
         """
         with open(path, 'r') as file_read:
-            lines = file_read.readlines()
-
             result = []
-            for line in lines:
+            for line in file_read:
                 if "] ;" in line:
                     final = line.split(';')[1].split('\n')[0].strip()
                     result.append(final)
@@ -122,8 +120,6 @@ class Preprocess(object):
             set_path (str): output dir path
         """
         with open(set_path + self.complex_output, 'r') as file_read:
-            complex_list = file_read.readlines()
-
             pure = []
             pure_punctuation = []
             pure_number = []
@@ -132,7 +128,7 @@ class Preprocess(object):
             pure_reg = re.compile(r"[^ 가-힣]+")
             number_list = [str(x) for x in range(10)]
             punctuation_list = [',', '?', '!', "'", '"', '.', '<', '>', '[', ']']
-            for complex_item in complex_list:
+            for complex_item in file_read:
                 reg_result = pure_reg.findall(complex_item[:len(complex)-2])
                 if len(reg_result) == 0:
                     pure.append(complex_item)
