@@ -29,22 +29,18 @@ class Complex(object):
         Args:
             path (str): target file's name and path
         Returns:
-            result (list): plain text corpus
+            yield (str): plain text
         """
         with open(path, 'r') as file_read:
-            result = []
             for line in file_read:
                 if "] ;" in line:
-                    final = line.split(';')[1].split('\n')[0].strip()
-                    result.append(final)
-
-        return result
+                    yield line.split(';')[1].split('\n')[0].strip()
 
     @staticmethod
     def search():
         """generate path list
         Returns:
-            yield target path
+            yield (str): target path
         """
         dirname = '../'
         filenames = os.listdir(dirname)
@@ -63,8 +59,7 @@ class Complex(object):
             all_reg = re.compile(r"[ 가-힣0-9\,\?\!\'\"\.\<\>\[\]]+")
 
             for path in self.search():
-                corpus = self.corpus_generator(path)
-                for item in corpus:
+                for item in self.corpus_generator(path):
                     item = item.decode('mbcs').encode('utf-8')
                     sliced = item[:len(item)-1]
                     subed = all_reg.sub('', sliced)
