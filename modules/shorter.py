@@ -110,8 +110,7 @@ class Preprocess(object):
         """
         with open(set_path + filename, 'r') as file_read:
             with open(set_path + 'short/short_' + filename, 'w') as file_write:
-                lines = file_read.readlines()
-                for line in lines:
+                for line in file_read:
                     splited = line[:len(line)-1].split(' ')
                     splited_len = len(splited) - 1
                     for item in splited:
