@@ -44,31 +44,25 @@ class Complex(object):
     def search():
         """generate path list
         Returns:
-            result (list): target path list
+            yield target path
         """
         dirname = '../'
         filenames = os.listdir(dirname)
 
-        result = []
         for filename in filenames:
             if '.cdtree' in filename:
-                txtfile = dirname+filename
-                result.append(txtfile)
-        return result
-
+                yield dirname+filename
 
     def generate(self, set_path):
         """generate complex corpus
         Args:
             set_path (str): output dir path
         """
-        path_list = self.search()
-
         with open(set_path + self.complex_output, 'w') as file_write:
 
             all_reg = re.compile(r"[ 가-힣0-9\,\?\!\'\"\.\<\>\[\]]+")
 
-            for path in path_list:
+            for path in self.search():
                 corpus = self.corpus_generator(path)
                 for item in corpus:
                     item = item.decode('mbcs').encode('utf-8')
@@ -129,7 +123,7 @@ class Preprocess(object):
             number_list = [str(x) for x in range(10)]
             punctuation_list = [',', '?', '!', "'", '"', '.', '<', '>', '[', ']']
             for complex_item in file_read:
-                reg_result = pure_reg.findall(complex_item[:len(complex)-2])
+                reg_result = pure_reg.findall(complex_item[:-2])
                 if len(reg_result) == 0:
                     pure.append(complex_item)
                     pure_number.append(complex_item)
