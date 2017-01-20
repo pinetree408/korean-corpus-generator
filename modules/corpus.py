@@ -13,7 +13,8 @@ This module generate complex corpus and preprocess 4 parent pharse set
 
 import re
 import os
-
+from multiprocessing import Process
+from konlpy.tag import Kkma
 
 class Complex(object):
     """Generate complex corpus from cdtree file
@@ -33,8 +34,11 @@ class Complex(object):
         """
         with open(path, 'r') as file_read:
             for line in file_read:
-                if "] ;" in line:
-                    yield line.split(';')[1].split('\n')[0].strip()
+                line = line.strip()
+		if len(line) > 0 and line[0] != '\n' and line[0] != '[' and line[0] != '{' and line[0] != '}' and line[0] != '|' and line[0] != '=' and line[0] != '*' and line[0] != ':' and line[0] != '#':
+                    yield line
+                #if "] ;" in line:
+                #    yield line.split(';')[1].split('\n')[0].strip()
 
     @staticmethod
     def search():
@@ -42,12 +46,34 @@ class Complex(object):
         Returns:
             yield (str): target path
         """
-        dirname = '../'
+        #dirname = '../'
+	dirname = '../wiki/'
         filenames = os.listdir(dirname)
 
         for filename in filenames:
-            if '.cdtree' in filename:
+            #if '.cdtree' in filename:
+            if '.txt' in filename:
                 yield dirname+filename
+
+    def generate_per_file(self, path_list, file_write):
+        kkma = Kkma()
+        for path in path_list:
+            print path
+            for item in self.corpus_generator(path):
+                '''
+                item = item.decode('mbcs').encode('utf-8')
+                sliced = item[:len(item)-1]
+                subed = all_reg.sub('', sliced)
+                if len(subed) != 0:
+                    continue
+                file_write.write((item + '\n'))
+                '''
+                for sub_item in kkma.sentences(item.decode('utf-8')):
+                    sliced = sub_item[:len(sub_item)-1]
+                    subed = all_reg.sub('', sliced.encode('utf-8'))
+                    if len(subed) != 0:
+                        continue
+                    file_write.write((sub_item.encode('utf-8') + '\n'))
 
     def generate(self, set_path):
         """generate complex corpus
@@ -56,16 +82,18 @@ class Complex(object):
         """
         with open(set_path + self.complex_output, 'w') as file_write:
 
-            all_reg = re.compile(r"[ 가-힣0-9\,\?\!\'\"\.\<\>\[\]]+")
+            all_reg = re.compile(r"[ 가-힣0-9\,\?\!\'\"\.]+")
 
-            for path in self.search():
-                for item in self.corpus_generator(path):
-                    item = item.decode('mbcs').encode('utf-8')
-                    sliced = item[:len(item)-1]
-                    subed = all_reg.sub('', sliced)
-                    if len(subed) != 0:
-                        continue
-                    file_write.write((item + '\n'))
+            #for path in self.search():
+                #print path
+		#self.generate_per_file(path, kkma, file_write)
+            path_list = list(self.search())
+            processes = []
+	    for i in range(47):
+                processes.append(Process(target=self.generate_per_file, args=(path_list[(i*2):(i*2)+2], file_write)))
+		processes[-1].start()
+            for p in processes:
+                p.join()
 
 class Preprocess(object):
     """Generate 4 parent pharse set from complex
