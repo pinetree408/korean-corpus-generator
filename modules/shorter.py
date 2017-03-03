@@ -62,7 +62,7 @@ class KE(object):
         additional_len = 0
         for item in additional:
             additional_len += len(item)
-        words = self.hangul.sub('', word).decode('utf-8')
+        words = self.hangul.sub('', word)
         result = 0
         for word in words:
             char_code = ord(word)

@@ -13,7 +13,8 @@ This module generate complex corpus and preprocess 4 parent pharse set
 
 import re
 import os
-
+from multiprocessing import Process, Queue
+from konlpy.tag import Kkma
 
 class Complex(object):
     """Generate complex corpus from cdtree file
@@ -21,7 +22,7 @@ class Complex(object):
         complex_output (str): file name of generated complex corpus
     """
 
-    complex_output = "complex.txt"
+    complex_output = "/complex/complex"
 
     @staticmethod
     def corpus_generator(path):
@@ -33,8 +34,11 @@ class Complex(object):
         """
         with open(path, 'r') as file_read:
             for line in file_read:
-                if "] ;" in line:
-                    yield line.split(';')[1].split('\n')[0].strip()
+                line = line.strip()
+		if len(line) > 0 and line[0] != '\n' and line[0] != '[' and line[0] != '{' and line[0] != '}' and line[0] != '|' and line[0] != '=' and line[0] != '*' and line[0] != ':' and line[0] != '#':
+                    yield line
+                #if "] ;" in line:
+                #    yield line.split(';')[1].split('\n')[0].strip()
 
     @staticmethod
     def search():
@@ -42,30 +46,71 @@ class Complex(object):
         Returns:
             yield (str): target path
         """
-        dirname = '../'
+        #dirname = '../'
+	dirname = '../wiki/'
         filenames = os.listdir(dirname)
 
         for filename in filenames:
-            if '.cdtree' in filename:
+            #if '.cdtree' in filename:
+            if '.txt' in filename:
                 yield dirname+filename
 
-    def generate(self, set_path):
-        """generate complex corpus
-        Args:
-            set_path (str): output dir path
-        """
-        with open(set_path + self.complex_output, 'w') as file_write:
+    @staticmethod
+    def whatisthis(string):
+        try:
+            string.decode('utf-8')
+            return "utf8"
+        except UnicodeError:
+            return "not"
 
-            all_reg = re.compile(r"[ 가-힣0-9\,\?\!\'\"\.\<\>\[\]]+")
-
-            for path in self.search():
+    def generate_per_file(self, file_name, path_list, all_reg):
+        kkma = Kkma()
+        with open(file_name, 'w') as file_write:
+            for path in path_list:
+                print path + "-start"
                 for item in self.corpus_generator(path):
+                    '''
                     item = item.decode('mbcs').encode('utf-8')
                     sliced = item[:len(item)-1]
                     subed = all_reg.sub('', sliced)
                     if len(subed) != 0:
                         continue
                     file_write.write((item + '\n'))
+                    '''
+                    for sub_item in kkma.sentences(item.decode('utf-8')):
+                        sliced = sub_item[:len(sub_item)-1]
+                        subed = all_reg.sub('', sliced.encode('utf-8'))
+                        if len(subed) != 0:
+                            continue
+                        if '.' in sub_item:
+                            if self.whatisthis(sub_item) == "not":
+                                file_write.write(sub_item.encode('utf-8') + '\n')
+                            else:
+                                file_write.write(sub_item + '\n')
+                print path + "-end"
+
+    def generate(self, set_path):
+        """generate complex corpus
+        Args:
+            set_path (str): output dir path
+        """
+        #with open(set_path + self.complex_output, 'w') as file_write:
+
+        all_reg = re.compile(r"[ 가-힣0-9\,\?\!\'\"\.]+")
+        #for path in self.search():
+            #print path
+            #self.generate_per_file(path, kkma, file_write)
+        #for path in self.search():
+        #    print path
+        #    self.generate_per_file([path], all_reg, file_write)
+        path_list = list(self.search())
+        processes = []
+	for i in range(4):
+            file_name = set_path + self.complex_output + '-' + str(i) + ".txt"
+            processes.append(Process(target=self.generate_per_file, args=(file_name, path_list[(i*23):(i*23)+23], all_reg)))
+            processes[-1].start()
+        for p in processes:
+            p.join()
 
 class Preprocess(object):
     """Generate 4 parent pharse set from complex

@@ -38,7 +38,6 @@ def correlation_cal(file1, file2):
     f2value = []
     for k, v in od2.iteritems():
         f2value.append(int(v))
-
     corr = correlation(f1value, f2value)
 
     f1r.close()

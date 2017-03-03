@@ -14,13 +14,15 @@ def main():
         os.makedirs(set_path)
 
     print "Start"
-    print "Complex start"
-    complex_set = corpus.Complex()
-    complex_set.generate(set_path)
-    print "Complex complete"
+    #print "Complex start"
+    #complex_set = corpus.Complex()
+    #complex_set.generate(set_path)
+    #print "Complex complete"
     print "Pre-process start"
     preprocess_first = corpus.Preprocess()
     preprocess_first.generator(set_path)
+    print "End 4 parent pharse generate"
+    print "Start shorter"
     preprocess_second = shorter.Preprocess()
     preprocess_second.generator(set_path)
     print "Pre-process complete"
