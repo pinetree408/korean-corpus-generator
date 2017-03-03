@@ -71,7 +71,12 @@ class KE(object):
         """
         if option == 3:
             word = word.encode('utf-8')
-        words = self.hangul.sub('', word).decode('utf-8')
+        try:
+            words = self.hangul.sub('', word).decode('utf-8')
+        except UnicodeDecodeError as e:
+            print word
+            words = self.hangul.sub('', word)[:-2].decode('utf-8')
+
         result = []
         for word in words:
             char_code = ord(word)
@@ -143,7 +148,7 @@ class Unigram(object):
         """Initialize unigram class
         this method initialize all attributes of this class
         """
-        self.compare_set = {}
+        self.compare_set = []
         self.ke_object = KE()
         self.set = ['pure', 'pure_number', 'pure_punctuation', 'pure_number_punctuation']
 
@@ -163,8 +168,12 @@ class Unigram(object):
                 for word in line.split(' '):
                     for item in self.ke_object.change_complete_korean(word, 1):
                         result.append(item)
+                        if filename in self.set:
+                            if not item in self.compare_set:
+                                self.compare_set.append(item)
+                             
 
-            self.copy_set_file(filename, result)
+            #self.copy_set_file(filename, result)
             final = self.update_dict(result)
 
             if not filename in self.set:
@@ -215,7 +224,7 @@ class Bigram(object):
         """Initialize unigram class
         this method initialize all attributes of this class
         """
-        self.compare_set = {}
+        self.compare_set = []
         self.ke_object = KE()
         self.set = ['pure', 'pure_number', 'pure_punctuation', 'pure_number_punctuation']
 
@@ -236,13 +245,21 @@ class Bigram(object):
                             if len(items) - 1 == j:
                                 continue
                             else:
-                                bigram.append(item + '-' + items[j+1])
+                                bigram_item = item + '-' + items[j+1]
+                                bigram.append(bigram_item)
+                                if filename in self.set:
+                                    if not bigram_item in self.compare_set:
+                                        self.compare_set.append(bigram_item)
                         if len(changed) - 1 == i:
                             continue
                         else:
-                            bigram.append(items[len(items)-1] + '-' + changed[i+1][0])
+                            bigram_item = items[len(items)-1] + '-' + changed[i+1][0]
+                            bigram.append(bigram_item)
+                            if filename in self.set:
+                                if not bigram_item in self.compare_set:
+                                    self.compare_set.append(bigram_item)
 
-            self.copy_set_file(filename, bigram)
+            #self.copy_set_file(filename, bigram)
             final = self.update_dict(bigram)
 
             if not filename in self.set:
@@ -303,7 +320,7 @@ class Word(object):
         """Initialize unigram class
         this method initialize all attributes of this class
         """
-        self.compare_set = {}
+        self.compare_set = []
         self.hannanum = Hannanum()
         self.ke_object = KE()
         self.set = ['pure', 'pure_number', 'pure_punctuation', 'pure_number_punctuation']
@@ -324,11 +341,21 @@ class Word(object):
                 if len(line.strip()) == 0:
                     continue
                 #self.hannanum.morphs(line.decode('utf-8'))
-                for word in line.decode('utf-8').split(' '):
-                    changed = self.ke_object.change_complete_korean(word, 3)
-                    word_list.append("".join(changed))
+                #for word in line.decode('utf-8').split(' '):
+                try:
+                    morphs_list = self.hannanum.morphs(line.decode('utf-8'))
+                except UnicodeDecodeError as e:
+                    morphs_list = self.hannanum.morphs(line.encode('utf-8'))
 
-            self.copy_set_file(filename, word_list)
+                for word in morphs_list:
+                    changed = self.ke_object.change_complete_korean(word, 3)
+                    word_item = "".join(changed)
+                    word_list.append(word_item)
+                    if filename in self.set:
+                        if not word_item in self.compare_set:
+                            self.compare_set.append(word_item)
+
+            #self.copy_set_file(filename, word_list)
             final = self.update_dict(word_list)
 
             if not filename in self.set:
