@@ -33,8 +33,8 @@ def picked_generator(item):
                     index = '0' + index
             open_dir = './output/picked/' + item + '/' + item + '_picked_' + index + '.txt'
             with open(open_dir, 'w') as file_write:
-                for item in picked:
-                    file_write.write(item)
+                for line in picked:
+                    file_write.write(line)
             i += 5
 
 def repeat_picked_generator():
