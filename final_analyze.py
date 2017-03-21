@@ -54,6 +54,7 @@ def corr_calc_of_picked(target, analyzer):
         void: it repeat picked_generator function for each parent set.
     """
     for item in SET_LIST:
+        print item
         filenames = os.listdir('./output/picked/' + item +'/')
 
         analyzer.analyze('./set/', './analyze/', item)
@@ -68,7 +69,7 @@ def corr_calc_of_picked(target, analyzer):
             for filename in filenames:
                 if not '.txt' in filename:
                     continue
-                target_dir = './output/picked' + item + '/'
+                target_dir = './output/picked/' + item + '/'
                 analyzer.analyze(target_dir, './analyze/', filename.replace('.txt', ''))
 
                 corr_file1 = './analyze/' + analyzer_name +'analyze_' + item  + '.txt'
@@ -94,5 +95,5 @@ def corr_calc_of_target(target):
         corr_calc_of_picked(target, word_analyzer)
 
 if __name__ == "__main__":
-    repeat_picked_generator()
+    #repeat_picked_generator()
     corr_calc_of_target('word')

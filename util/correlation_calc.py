@@ -45,8 +45,8 @@ def correlation_cal(file1, file2):
     return corr
 
 def entropy_calc(file1, file2):
-    f1r = open(file1+".txt", 'r')
-    f2r = open(file2+".txt", 'r')
+    f1r = open(file1, 'r')
+    f2r = open(file2, 'r')
 
     f1lines = f1r.readlines()
     f2lines = f2r.readlines()
